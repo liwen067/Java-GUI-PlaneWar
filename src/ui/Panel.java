@@ -42,7 +42,7 @@ public class Panel extends JPanel {
             EnemyPlane enemyPlane = enemyPlanes.get(i);
             for (int j = 0; j < fires.size();j++){
                 Fire fire = fires.get(j);
-                if (fire.getX() + fire.image.getWidth()/4>enemyPlane.getX() && fire.getX()<enemyPlane.getX()+enemyPlane.image.getWidth() && fire.getY()+fire.image.getHeight()/4>enemyPlane.getY()&&fire.getY()<enemyPlane.getY()+enemyPlane.image.getHeight()){
+                if (fire.x + fire.image.getWidth()/4>enemyPlane.getX() && fire.x<enemyPlane.getX()+enemyPlane.image.getWidth() && fire.y+fire.image.getHeight()/4>enemyPlane.getY()&&fire.y<enemyPlane.getY()+enemyPlane.image.getHeight()){
                     enemyPlanes.remove(i);
                     fires.remove(j);
                     score++;
@@ -64,8 +64,11 @@ public class Panel extends JPanel {
         for(int i = 0; i < enemyPlanes.size(); i++){
             EnemyPlane enemyPlane = enemyPlanes.get(i);
             enemyPlane.setY(enemyPlane.getY() + 5);
-
+            if (enemyPlane.getY() >= (768 + enemyPlane.image.getHeight()) ){
+                enemyPlanes.remove(i);
+            }
         }
+
     }
     //子弹的线程
     public void fireBegin(){
@@ -98,7 +101,11 @@ public class Panel extends JPanel {
     private void fireMove() {
         for (int i = 0; i < fires.size();i++){
             Fire fire = fires.get(i);
-            fire.setY(fire.getY() - 5);
+//            fire.setY(fire.getY() - 5);
+            fire.y -= 5;
+            if (fire.y <= -fire.image.getHeight() ){
+                fires.remove(i);
+            }
         }
     }
     public Panel(Frame frame) {
@@ -122,7 +129,7 @@ public class Panel extends JPanel {
 
         for (int i = 0; i < fires.size(); i++){
             Fire fire = fires.get(i);
-            g.drawImage(fire.image,fire.getX(),fire.getY(),fire.image.getWidth()/4,fire.image.getHeight()/4,null);
+            g.drawImage(fire.image,fire.x,fire.y,fire.image.getWidth()/4,fire.image.getHeight()/4,null);
         }
 
         g.drawImage(plane.image,plane.getX(),plane.getY(),null);
@@ -131,7 +138,6 @@ public class Panel extends JPanel {
         g.drawString("分数"+score,10,30);
 
     }
-
 
     private void keyControl(Frame frame) {
         KeyAdapter keyAdapter = new KeyAdapter() {
@@ -146,8 +152,8 @@ public class Panel extends JPanel {
                     }
                 }else if(i==KeyEvent.VK_D||i==KeyEvent.VK_RIGHT){
                     plane.setX(plane.getX()+30);
-                    if(plane.getX() >= 512){
-                        plane.setX(512);
+                    if(plane.getX() >= 512- plane.image.getWidth()){
+                        plane.setX(512- plane.image.getWidth());
                     }
                 }else if(i==KeyEvent.VK_W||i==KeyEvent.VK_UP){
                     plane.setY(plane.getY()-30);
@@ -156,8 +162,8 @@ public class Panel extends JPanel {
                     }
                 }else if(i==KeyEvent.VK_S||i==KeyEvent.VK_DOWN){
                     plane.setY(plane.getY()+30);
-                    if(plane.getY() >= 768){
-                        plane.setY(768);
+                    if(plane.getY() >= 768 - plane.image.getHeight()){
+                        plane.setY(768 - plane.image.getHeight());
                     }
                 }
                 repaint();
